@@ -6,7 +6,7 @@ const AdminPage = async () => {
   return (
     <div>
       This is admin dashboard
-      {JSON.stringify(session)}
+      <pre>{JSON.stringify(session, null, 2)}</pre>
     </div>
   );
 };
