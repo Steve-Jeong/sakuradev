@@ -13,7 +13,8 @@ declare module "next-auth" {
 
   interface User {
     // ...other properties
-    role: string
+    role: string,
+    provider: string
   }
 }
 

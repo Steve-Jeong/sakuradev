@@ -17,6 +17,7 @@ model User {
   emailVerified DateTime?
   image         String?
   role          String?
+  provider      String?
   accounts      Account[]
   sessions      Session[]
   // Optional for WebAuthn support
@@ -51,6 +52,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
+  provider     String?
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())

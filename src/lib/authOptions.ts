@@ -34,7 +34,8 @@ export const authOptions : NextAuthOptions = {
           name: `${profile.given_name} ${profile.family_name}`,
           email: profile.email,
           image: profile.picture,
-          role: profile.role ? profile.role : "user",
+          role: profile.role ?? "user",
+          provider: 'google',
         };
       },
     }),
@@ -48,16 +49,17 @@ export const authOptions : NextAuthOptions = {
           name: profile.name ?? profile.login,
           email: profile.email,
           image: profile.avatar_url,
-          role: profile.role ? profile.role : "user",
+          role: profile.role ?? "user",
+          provider: 'github',
         };
       },
     }),
   ],
   callbacks: {
     async signIn({ user, account, profile }) : Promise<boolean> {
-      console.log('### signin callback, user : ', user);
-      console.log('### signin callback, account : ', account);
-      console.log('### signin callback, profile : ', profile);
+      // console.log('### signin callback, user : ', user);
+      // console.log('### signin callback, account : ', account);
+      // console.log('### signin callback, profile : ', profile);
       try {
         if (account?.type === 'oauth') {
           const existingUser = await prisma.user.findUnique({
@@ -66,6 +68,7 @@ export const authOptions : NextAuthOptions = {
           });
   
           if (existingUser) {
+            console.log('### signin callback, existingUser : ', existingUser);
             const linkedAccount = existingUser.accounts.find(
               (acc) => acc.provider === account.provider
             );
@@ -100,6 +103,7 @@ export const authOptions : NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.role = token.role as string;
+        session.user.provider = token.provider as string;
         try {
           const userWithAccounts = await prisma.user.findUnique({
             where: { email: session.user.email! },
@@ -119,6 +123,7 @@ export const authOptions : NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
+        token.provider = user.provider;
       }
       return token;
     },
